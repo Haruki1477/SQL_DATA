@@ -284,3 +284,30 @@ def get_all_customers():
     with conn.cursor() as cur:
         cur.execute("SELECT 顧客ID, 氏名, メールアドレス FROM 顧客 ORDER BY 顧客ID")
         return cur.fetchall()
+
+def get_customer_list():
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("SELECT 顧客ID, 氏名 FROM 顧客")
+        return cur.fetchall()
+
+def get_product_list():
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("SELECT 商品ID, 商品名, 単価 FROM 商品")
+        return cur.fetchall()
+
+def add_order(customer_id, order_date):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("INSERT INTO 注文 (顧客ID, 注文日) VALUES (%s, %s) RETURNING 注文ID", (customer_id, order_date))
+        order_id = cur.fetchone()[0]
+        conn.commit()
+        return order_id
+
+def add_order_detail(order_id, product_id, quantity):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("INSERT INTO 注文明細 (注文ID, 商品ID, 数量) VALUES (%s, %s, %s)", (order_id, product_id, quantity))
+        conn.commit()
+
