@@ -337,3 +337,30 @@ def delete_customer(customer_id):
     with conn.cursor() as cur:
         cur.execute("DELETE FROM 顧客 WHERE 顧客ID = %s", (customer_id,))
         conn.commit()
+
+def search_products_by_name(keyword):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 商品ID, 商品名, 単価
+            FROM 商品
+            WHERE 商品名 ILIKE %s
+            ORDER BY 商品ID
+        """, (f"%{keyword}%",))
+        return cur.fetchall()
+
+def update_product(product_id, name, price):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE 商品
+            SET 商品名 = %s, 単価 = %s
+            WHERE 商品ID = %s
+        """, (name, price, product_id))
+        conn.commit()
+
+def delete_product(product_id):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM 商品 WHERE 商品ID = %s", (product_id,))
+        conn.commit()
