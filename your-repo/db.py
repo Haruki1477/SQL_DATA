@@ -215,3 +215,25 @@ def update_customer(customer_id, name, email):
         WHERE 顧客ID = %s
     """, (name, email, customer_id))
     conn.commit()
+
+# 商品検索（キーワード含む商品名）
+def search_products(keyword):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 商品ID, 商品名, 単価
+            FROM 商品
+            WHERE 商品名 ILIKE %s
+        """, (f"%{keyword}%",))
+        return cur.fetchall()
+
+# 商品更新
+def update_product(product_id, name, price):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE 商品
+            SET 商品名 = %s, 単価 = %s
+            WHERE 商品ID = %s
+        """, (name, price, product_id))
+        conn.commit()
