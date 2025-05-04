@@ -131,3 +131,33 @@ def delete_product(product_id):
         cur.close()
         conn.close()
 
+def update_order(order_id, customer_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            "UPDATE 注文 SET 顧客ID = %s WHERE 注文ID = %s",
+            (customer_id, order_id)
+        )
+        conn.commit()
+    except Exception as e:
+        print("エラー:", e)
+        conn.rollback()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_order(order_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM 注文明細 WHERE 注文ID = %s", (order_id,))
+        cur.execute("DELETE FROM 注文 WHERE 注正ID = %s", (order_id,))
+        conn.commit()
+    except Exception as e:
+        print("エラー:", e)
+        conn.rollback()
+    finally:
+        cur.close()
+        conn.close()
+
