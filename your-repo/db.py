@@ -411,3 +411,16 @@ def get_sales_summary_by_customer():
         """)
         return cur.fetchall()
 
+def get_sales_data_by_period(start_date, end_date):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT o.注文日, c.氏名, p.商品名, d.数量, p.単価, d.数量 * p.単価 AS 合計
+            FROM 注文 o
+            JOIN 顧客 c ON o.顧客ID = c.顧客ID
+            JOIN 注文明細 d ON o.注文ID = d.注文ID
+            JOIN 商品 p ON d.商品ID = p.商品ID
+            WHERE o.注文日 BETWEEN %s AND %s
+            ORDER BY o.注文日
+        """, (start_date, end_date))
+        return cur.fetchall()
