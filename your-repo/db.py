@@ -364,3 +364,22 @@ def delete_product(product_id):
     with conn.cursor() as cur:
         cur.execute("DELETE FROM 商品 WHERE 商品ID = %s", (product_id,))
         conn.commit()
+
+def search_orders(keyword):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT o.注文ID, c.氏名, o.注文日
+            FROM 注文 o
+            JOIN 顧客 c ON o.顧客ID = c.顧客ID
+            WHERE CAST(o.注文ID AS TEXT) ILIKE %s OR c.氏名 ILIKE %s
+            ORDER BY o.注文日 DESC
+        """, (f"%{keyword}%", f"%{keyword}%"))
+        return cur.fetchall()
+
+def delete_order(order_id):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM 注文明細 WHERE 注文ID = %s", (order_id,))
+        cur.execute("DELETE FROM 注文 WHERE 注文ID = %s", (order_id,))
+        conn.commit()
