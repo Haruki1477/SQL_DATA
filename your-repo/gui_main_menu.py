@@ -20,7 +20,7 @@ class MainMenuApp:
 
         buttons = [
             ("顧客登録", "gui_customer.py"),
-            ("商品登録", "gui_product.py"),
+            ("商品登録", "gui_register_product.py"),
             ("注文登録", "gui_order_input.py"),
             ("売上集計", "gui_sales_summary.py"),
         ]

@@ -237,3 +237,24 @@ def update_product(product_id, name, price):
             WHERE 商品ID = %s
         """, (name, price, product_id))
         conn.commit()
+
+# 注文明細取得
+def get_order_details(order_id):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 商品ID, 数量 FROM 注文明細 WHERE 注文ID = %s
+        """, (order_id,))
+        return cur.fetchall()
+
+# 注文明細更新
+def update_order_details(details):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        for order_id, product_id, quantity in details:
+            cur.execute("""
+                UPDATE 注文明細
+                SET 数量 = %s
+                WHERE 注文ID = %s AND 商品ID = %s
+            """, (quantity, order_id, product_id))
+        conn.commit()
