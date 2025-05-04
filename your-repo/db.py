@@ -77,3 +77,26 @@ def insert_order(customer_id, items):  # items: [(商品ID, 数量)]
     finally:
         cur.close()
         conn.close()
+def get_orders_with_details():
+    conn = get_connection()
+    cur = conn.cursor()
+    query = """
+    SELECT
+        o.注文ID,
+        o.注文日,
+        c.氏名 AS 顧客名,
+        p.商品名,
+        p.単価,
+        d.数量,
+        (p.単価 * d.数量) AS 金額
+    FROM 注文 o
+    JOIN 顧客 c ON o.顧客ID = c.顧客ID
+    JOIN 注文明細 d ON o.注文ID = d.注文ID
+    JOIN 商品 p ON d.商品ID = p.商品ID
+    ORDER BY o.注文ID, p.商品ID;
+    """
+    cur.execute(query)
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    return results
