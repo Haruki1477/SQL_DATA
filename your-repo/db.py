@@ -311,3 +311,29 @@ def add_order_detail(order_id, product_id, quantity):
         cur.execute("INSERT INTO 注文明細 (注文ID, 商品ID, 数量) VALUES (%s, %s, %s)", (order_id, product_id, quantity))
         conn.commit()
 
+def search_customers_by_name(keyword):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 顧客ID, 氏名, メールアドレス
+            FROM 顧客
+            WHERE 氏名 ILIKE %s
+            ORDER BY 顧客ID
+        """, (f"%{keyword}%",))
+        return cur.fetchall()
+
+def update_customer(customer_id, name, email):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            UPDATE 顧客
+            SET 氏名 = %s, メールアドレス = %s
+            WHERE 顧客ID = %s
+        """, (name, email, customer_id))
+        conn.commit()
+
+def delete_customer(customer_id):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM 顧客 WHERE 顧客ID = %s", (customer_id,))
+        conn.commit()
