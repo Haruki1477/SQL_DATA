@@ -396,3 +396,18 @@ def get_sales_summary_by_date():
             ORDER BY o.注文日
         """)
         return cur.fetchall()
+
+def get_sales_summary_by_customer():
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT c.氏名, SUM(d.数量 * p.単価) AS 売上合計
+            FROM 顧客 c
+            JOIN 注文 o ON c.顧客ID = o.顧客ID
+            JOIN 注文明細 d ON o.注文ID = d.注文ID
+            JOIN 商品 p ON d.商品ID = p.商品ID
+            GROUP BY c.氏名
+            ORDER BY c.氏名
+        """)
+        return cur.fetchall()
+
