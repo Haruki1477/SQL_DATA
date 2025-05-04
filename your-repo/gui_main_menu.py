@@ -19,7 +19,7 @@ class MainMenuApp:
         ttk.Label(frame, text="メニュー", font=("Helvetica", 16)).pack(pady=10)
 
         buttons = [
-            ("顧客登録", "gui_customer.py"),
+            ("顧客登録", "gui_add_customer.py"),
             ("商品登録", "gui_register_product.py"),
             ("注文登録", "gui_order_input.py"),
             ("売上集計", "gui_sales_summary.py"),
