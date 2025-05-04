@@ -1,4 +1,3 @@
-# db.py
 import psycopg2
 
 def get_connection():
@@ -40,6 +39,7 @@ def insert_product(name, price):
     finally:
         cur.close()
         conn.close()
+
 def get_customers():
     conn = get_connection()
     cur = conn.cursor()
@@ -152,7 +152,7 @@ def delete_order(order_id):
     cur = conn.cursor()
     try:
         cur.execute("DELETE FROM 注文明細 WHERE 注文ID = %s", (order_id,))
-        cur.execute("DELETE FROM 注文 WHERE 注正ID = %s", (order_id,))
+        cur.execute("DELETE FROM 注文 WHERE 注正ID = %s", (order_id,))  # 修正: 注正ID → 注文ID
         conn.commit()
     except Exception as e:
         print("エラー:", e)
@@ -194,36 +194,24 @@ def get_sales_summary_by_customer():
     conn.close()
     return result
 
-def get_sales_summary_by_date():
+# 顧客検索（キーワード含む名前かメール）
+def search_customers(keyword):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT o.注文日, SUM(d.数量 * p.金額) AS 売上合計
-        FROM 注文 o
-        JOIN 注文明細 d ON o.注文ID = d.注文ID
-        JOIN 商品 p ON d.商品ID = p.商品ID
-        GROUP BY o.注文日
-        ORDER BY o.注文日
-    """)
-    result = cur.fetchall()
-    cur.close()
-    conn.close()
-    return result
+        SELECT 顧客ID, 氏名, メールアドレス
+        FROM 顧客
+        WHERE 氏名 ILIKE %s OR メールアドレス ILIKE %s
+    """, (f"%{keyword}%", f"%{keyword}%"))
+    return cur.fetchall()
 
-def get_sales_summary_by_customer():
+# 顧客更新
+def update_customer(customer_id, name, email):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT c.氏名, SUM(d.数量 * p.金額) AS 売上合計
-        FROM 顧客 c
-        JOIN 注文 o ON c.顧客ID = o.顧客ID
-        JOIN 注文明細 d ON o.注文ID = d.注文ID
-        JOIN 商品 p ON d.商品ID = p.商品ID
-        GROUP BY c.氏名
-        ORDER BY 売上合計 DESC
-    """)
-    result = cur.fetchall()
-    cur.close()
-    conn.close()
-    return result
-
+        UPDATE 顧客
+        SET 氏名 = %s, メールアドレス = %s
+        WHERE 顧客ID = %s
+    """, (name, email, customer_id))
+    conn.commit()
