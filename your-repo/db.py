@@ -77,6 +77,7 @@ def insert_order(customer_id, items):  # items: [(商品ID, 数量)]
     finally:
         cur.close()
         conn.close()
+
 def get_orders_with_details():
     conn = get_connection()
     cur = conn.cursor()
@@ -100,3 +101,33 @@ def get_orders_with_details():
     cur.close()
     conn.close()
     return results
+
+def update_product(product_id, name, price):
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            "UPDATE 商品 SET 商品名 = %s, 単価 = %s WHERE 商品ID = %s",
+            (name, price, product_id)
+        )
+        conn.commit()
+    except Exception as e:
+        print("エラー:", e)
+        conn.rollback()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_product(product_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM 商品 WHERE 商品ID = %s", (product_id,))
+        conn.commit()
+    except Exception as e:
+        print("エラー:", e)
+        conn.rollback()
+    finally:
+        cur.close()
+        conn.close()
+
