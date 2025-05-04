@@ -272,3 +272,15 @@ def get_all_products():
     with conn.cursor() as cur:
         cur.execute("SELECT 商品ID, 商品名, 単価 FROM 商品 ORDER BY 商品ID")
         return cur.fetchall()
+
+def add_customer(name, email):
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("INSERT INTO 顧客 (氏名, メールアドレス) VALUES (%s, %s)", (name, email))
+        conn.commit()
+
+def get_all_customers():
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("SELECT 顧客ID, 氏名, メールアドレス FROM 顧客 ORDER BY 顧客ID")
+        return cur.fetchall()
