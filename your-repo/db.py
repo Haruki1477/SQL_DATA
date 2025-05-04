@@ -383,3 +383,16 @@ def delete_order(order_id):
         cur.execute("DELETE FROM 注文明細 WHERE 注文ID = %s", (order_id,))
         cur.execute("DELETE FROM 注文 WHERE 注文ID = %s", (order_id,))
         conn.commit()
+
+def get_sales_summary_by_date():
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT o.注文日, SUM(d.数量 * p.単価) AS 売上合計
+            FROM 注文 o
+            JOIN 注文明細 d ON o.注文ID = d.注文ID
+            JOIN 商品 p ON d.商品ID = p.商品ID
+            GROUP BY o.注文日
+            ORDER BY o.注文日
+        """)
+        return cur.fetchall()
